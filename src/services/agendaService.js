@@ -6,31 +6,52 @@
 const API_BASE_URL = 'https://playground.4geeks.com/contact';
 const AGENDA_SLUG = 'victormoreno';
 
+// Cache para evitar verificaciones múltiples
+let agendaVerified = false;
+
+const ensureAgendaExists = async () => {
+  // Si ya verificamos que existe, no hacer nada
+  if (agendaVerified) return true;
+  
+  try {
+    // Primero intentar obtener la agenda
+    const checkResponse = await fetch(`${API_BASE_URL}/agendas/${AGENDA_SLUG}`);
+    
+    if (checkResponse.ok) {
+      agendaVerified = true;
+      return true;
+    }
+    
+    // Si no existe (404), crearla
+    if (checkResponse.status === 404) {
+      const createResponse = await fetch(`${API_BASE_URL}/agendas/${AGENDA_SLUG}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (createResponse.ok) {
+        const data = await createResponse.json();
+        console.log('✅ Agenda creada exitosamente');
+        agendaVerified = true;
+        return true;
+      }
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('❌ Error verificando/creando agenda:', error);
+    return false;
+  }
+};
+
 /**
- * Crear la agenda personal si no existe
+ * Crear la agenda personal si no existe (método legacy)
  * @returns {Promise} Respuesta de la API
  */
 export const createAgenda = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/agendas/${AGENDA_SLUG}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      console.log('✅ Agenda creada exitosamente:', data);
-      return data;
-    } else {
-      console.log('ℹ️ La agenda ya existe');
-      return null;
-    }
-  } catch (error) {
-    console.error('❌ Error creando agenda:', error);
-    throw error;
-  }
+  return await ensureAgendaExists();
 };
 
 /**
@@ -39,11 +60,14 @@ export const createAgenda = async () => {
  */
 export const getContacts = async () => {
   try {
+    // Asegurar que la agenda existe antes de obtener contactos
+    await ensureAgendaExists();
+    
     const response = await fetch(`${API_BASE_URL}/agendas/${AGENDA_SLUG}/contacts`);
     
     if (response.ok) {
       const data = await response.json();
-      console.log('✅ Contactos obtenidos:', data);
+      console.log(`✅ ${data.contacts?.length || 0} contactos obtenidos`);
       return data.contacts || [];
     } else {
       console.error('❌ Error obteniendo contactos:', response.status);
@@ -55,13 +79,12 @@ export const getContacts = async () => {
   }
 };
 
-/**
- * Crear un nuevo contacto
- * @param {Object} contactData - Datos del contacto
- * @returns {Promise} Respuesta de la API
- */
+
 export const createContact = async (contactData) => {
   try {
+    // Asegurar que la agenda existe antes de crear contacto
+    await ensureAgendaExists();
+    
     const response = await fetch(`${API_BASE_URL}/agendas/${AGENDA_SLUG}/contacts`, {
       method: 'POST',
       headers: {
@@ -83,12 +106,7 @@ export const createContact = async (contactData) => {
   }
 };
 
-/**
- * Actualizar un contacto existente
- * @param {number} contactId - ID del contacto
- * @param {Object} contactData - Nuevos datos del contacto
- * @returns {Promise} Respuesta de la API
- */
+
 export const updateContact = async (contactId, contactData) => {
   try {
     const response = await fetch(`${API_BASE_URL}/agendas/${AGENDA_SLUG}/contacts/${contactId}`, {
@@ -112,11 +130,7 @@ export const updateContact = async (contactId, contactData) => {
   }
 };
 
-/**
- * Eliminar un contacto
- * @param {number} contactId - ID del contacto a eliminar
- * @returns {Promise<boolean>} True si se eliminó exitosamente
- */
+
 export const deleteContact = async (contactId) => {
   try {
     const response = await fetch(`${API_BASE_URL}/agendas/${AGENDA_SLUG}/contacts/${contactId}`, {
@@ -135,11 +149,7 @@ export const deleteContact = async (contactId) => {
   }
 };
 
-/**
- * Obtener un contacto específico por ID
- * @param {number} contactId - ID del contacto
- * @returns {Promise} Datos del contacto
- */
+
 export const getContactById = async (contactId) => {
   try {
     const response = await fetch(`${API_BASE_URL}/agendas/${AGENDA_SLUG}/contacts/${contactId}`);

@@ -14,7 +14,10 @@ export const initialStore = () => {
     message: null,
     
     // Estado de la agenda (si existe o no)
-    agendaExists: false
+    agendaExists: false,
+    
+    // Flag para evitar inicializaciones múltiples
+    isInitialized: false
   }
 }
 
@@ -39,7 +42,15 @@ export default function storeReducer(store, action = {}) {
       return {
         ...store,
         contacts: action.payload,
-        isLoading: false
+        isLoading: false,
+        isInitialized: true
+      };
+    
+    // Marcar como inicializado
+    case 'SET_INITIALIZED':
+      return {
+        ...store,
+        isInitialized: action.payload
       };
     
     // Agregar un nuevo contacto a la lista

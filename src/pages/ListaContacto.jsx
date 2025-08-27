@@ -1,40 +1,36 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
-import { createAgenda, getContacts, deleteContact } from "../services/agendaService.js";
+import { getContacts, deleteContact } from "../services/agendaService.js";
 
 export const ListaContacto = () => {
   const { store, dispatch } = useGlobalReducer();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [contactToDelete, setContactToDelete] = useState(null);
+  const initRef = useRef(false);
 
   /**
-   * Inicializar agenda y cargar contactos
+   * Cargar contactos una sola vez
    */
   useEffect(() => {
-    const initializeAgenda = async () => {
+    // Prevenir múltiples ejecuciones
+    if (initRef.current || store.isInitialized) return;
+    initRef.current = true;
+
+    const loadContacts = async () => {
       try {
-        console.log('🚀 Inicializando agenda victormoreno...');
         dispatch({ type: 'SET_LOADING', payload: true });
-        
-        // Crear agenda si no existe
-        await createAgenda();
-        
-        // Cargar contactos
         const contacts = await getContacts();
         dispatch({ type: 'LOAD_CONTACTS', payload: contacts });
-        
-        console.log(`✅ Agenda cargada con ${contacts.length} contactos`);
       } catch (error) {
-        console.error('❌ Error inicializando agenda:', error);
-        dispatch({ type: 'SET_LOADING', payload: false });
+        console.error('Error cargando contactos:', error);
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false });
       }
     };
 
-    initializeAgenda();
-  }, [dispatch]);
+    loadContacts();
+  }, [dispatch, store.isInitialized]);
 
   /**
    * Confirmar eliminación de contacto
