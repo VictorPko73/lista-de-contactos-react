@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useGlobalReducer from "../hooks/useGlobalReducer";
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { createContact } from "../services/agendaService.js";
 
-export const Demo = () => {
+export const FormulariAgregar = () => {
   const { dispatch } = useGlobalReducer();
   const navigate = useNavigate();
   
@@ -64,9 +64,9 @@ export const Demo = () => {
     return true;
   };
 
-  /**
-   * Enviar formulario para crear contacto
-   */
+  
+   //Enviar formulario para crear contacto
+   
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -78,21 +78,21 @@ export const Demo = () => {
     setIsSubmitting(true);
     
     try {
-      console.log('📝 Creando nuevo contacto:', formData);
+      console.log('Creando nuevo contacto:', formData);
       
       // Crear contacto en la API
       const newContact = await createContact(formData);
       
-      // Actualizar el estado global
+      // Agregar al estado global
       dispatch({ type: 'ADD_CONTACT', payload: newContact });
       
-      console.log('✅ Contacto creado exitosamente:', newContact);
+      console.log(' Contacto creado exitosamente:', newContact);
       
       // Redirigir a la lista de contactos
       navigate('/');
       
     } catch (error) {
-      console.error('❌ Error creando contacto:', error);
+      console.error('Error creando contacto:', error);
       alert('Error creating contact. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -100,15 +100,18 @@ export const Demo = () => {
   };
 
   return (
-    <div className="container-fluid" style={{ backgroundColor: '#f8f9fa', minHeight: '100vh', padding: '20px' }}>
+    <div className="container-fluid" style={{ backgroundColor: '#f8f9fa', minHeight: '100vh', padding: '15px' }}>
       <div className="row justify-content-center">
-        <div className="col-12 col-md-8 col-lg-6">
+        <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
           
-          {/* Contenedor principal con fondo blanco */}
-          <div className="bg-white rounded shadow-sm p-5">
+          {/* Contenedor principal */}
+          <div className="bg-white rounded shadow-sm p-4 p-md-5">
             
             {/* Título */}
-            <h1 className="text-center mb-4 fw-bold" style={{ fontSize: '2.5rem', color: '#333' }}>
+            <h1 className="text-center mb-4 fw-bold" style={{ 
+              fontSize: 'clamp(1.75rem, 6vw, 2.5rem)', 
+              color: '#333' 
+            }}>
               Add a new contact
             </h1>
 
@@ -117,7 +120,7 @@ export const Demo = () => {
               
               {/* Full Name */}
               <div className="mb-3">
-                <label htmlFor="name" className="form-label fw-bold">
+                <label htmlFor="name" className="form-label fw-bold" style={{ fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}>
                   Full Name
                 </label>
                 <input
@@ -129,12 +132,13 @@ export const Demo = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   disabled={isSubmitting}
+                  style={{ fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}
                 />
               </div>
 
               {/* Email */}
               <div className="mb-3">
-                <label htmlFor="email" className="form-label fw-bold">
+                <label htmlFor="email" className="form-label fw-bold" style={{ fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}>
                   Email
                 </label>
                 <input
@@ -146,12 +150,13 @@ export const Demo = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   disabled={isSubmitting}
+                  style={{ fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}
                 />
               </div>
 
               {/* Phone */}
               <div className="mb-3">
-                <label htmlFor="phone" className="form-label fw-bold">
+                <label htmlFor="phone" className="form-label fw-bold" style={{ fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}>
                   Phone
                 </label>
                 <input
@@ -163,12 +168,13 @@ export const Demo = () => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   disabled={isSubmitting}
+                  style={{ fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}
                 />
               </div>
 
               {/* Address */}
               <div className="mb-4">
-                <label htmlFor="address" className="form-label fw-bold">
+                <label htmlFor="address" className="form-label fw-bold" style={{ fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}>
                   Address
                 </label>
                 <input
@@ -180,31 +186,40 @@ export const Demo = () => {
                   value={formData.address}
                   onChange={handleInputChange}
                   disabled={isSubmitting}
+                  style={{ fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}
                 />
               </div>
 
-              {/* Botón Save */}
+              {/* Botón Save - Responsive */}
               <div className="d-grid mb-3">
                 <button 
                   type="submit" 
-                  className="btn btn-primary btn-lg"
+                  className="btn btn-primary btn-lg py-3"
                   disabled={isSubmitting}
-                  style={{ backgroundColor: '#007bff', borderColor: '#007bff' }}
+                  style={{ 
+                    backgroundColor: '#007bff', 
+                    borderColor: '#007bff',
+                    fontSize: 'clamp(1rem, 4vw, 1.125rem)'
+                  }}
                 >
                   {isSubmitting ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                      Saving...
+                      Creating...
                     </>
                   ) : (
-                    'save'
+                    <>
+                      <i className="fas fa-plus me-2"></i>
+                      Save
+                    </>
                   )}
                 </button>
               </div>
 
-              {/* Link back to contacts */}
+              {/* Link back to contacts - Responsive */}
               <div className="text-center">
-                <Link to="/" className="text-primary text-decoration-none">
+                <Link to="/" className="text-primary text-decoration-none" style={{ fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}>
+                  <i className="fas fa-arrow-left me-2"></i>
                   or get back to contacts
                 </Link>
               </div>

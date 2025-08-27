@@ -6,9 +6,9 @@ import {
     Route,
 } from "react-router-dom";
 import { Layout } from "./pages/Layout";
-import { Home } from "./pages/Home";
-import { Single } from "./pages/Single";
-import { Demo } from "./pages/Demo";
+import { ListaContacto } from "./pages/ListaContacto";
+import { FormularioEditar } from "./pages/FormularioEditar";
+import { FormulariAgregar } from "./pages/FormulariAgregar";
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -16,16 +16,14 @@ export const router = createBrowserRouter(
       <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
 
         {/* Página principal - Lista de contactos */}
-        <Route path= "/" element={<Home />} />
+        <Route path= "/" element={<ListaContacto />} />
         
         {/* Formulario para agregar contacto */}
-        <Route path="/add-contact" element={<Demo />} />
+        <Route path="/add-contact" element={<FormulariAgregar />} />
         
         {/* Formulario para editar contacto */}
-        <Route path="/edit-contact/:contactId" element={ <Single />} />
+        <Route path="/edit-contact/:contactId" element={ <FormularioEditar />} />
         
-        {/* Ruta original de demo (mantenemos por compatibilidad) */}
-        <Route path="/demo" element={<Demo />} />
       </Route>
     )
 );

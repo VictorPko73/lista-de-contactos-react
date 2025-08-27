@@ -24,7 +24,7 @@ export const createAgenda = async () => {
       console.log('✅ Agenda creada exitosamente:', data);
       return data;
     } else {
-      console.log('ℹ️ La agenda ya existe o hubo un error');
+      console.log('ℹ️ La agenda ya existe');
       return null;
     }
   } catch (error) {
@@ -57,8 +57,8 @@ export const getContacts = async () => {
 
 /**
  * Crear un nuevo contacto
- * @param {Object} contactData - Datos del contacto {name, phone, email, address}
- * @returns {Promise<Object>} Contacto creado
+ * @param {Object} contactData - Datos del contacto
+ * @returns {Promise} Respuesta de la API
  */
 export const createContact = async (contactData) => {
   try {
@@ -72,39 +72,14 @@ export const createContact = async (contactData) => {
     
     if (response.ok) {
       const data = await response.json();
-      console.log('✅ Contacto creado:', data);
+      console.log('✅ Contacto creado exitosamente:', data);
       return data;
     } else {
-      console.error('❌ Error creando contacto:', response.status);
-      throw new Error('Error creando contacto');
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
   } catch (error) {
-    console.error('❌ Error en createContact:', error);
+    console.error('❌ Error creando contacto:', error);
     throw error;
-  }
-};
-
-/**
- * Eliminar un contacto
- * @param {number} contactId - ID del contacto a eliminar
- * @returns {Promise<boolean>} True si se eliminó correctamente
- */
-export const deleteContact = async (contactId) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/agendas/${AGENDA_SLUG}/contacts/${contactId}`, {
-      method: 'DELETE'
-    });
-    
-    if (response.ok) {
-      console.log('✅ Contacto eliminado:', contactId);
-      return true;
-    } else {
-      console.error('❌ Error eliminando contacto:', response.status);
-      return false;
-    }
-  } catch (error) {
-    console.error('❌ Error en deleteContact:', error);
-    return false;
   }
 };
 
@@ -112,7 +87,7 @@ export const deleteContact = async (contactId) => {
  * Actualizar un contacto existente
  * @param {number} contactId - ID del contacto
  * @param {Object} contactData - Nuevos datos del contacto
- * @returns {Promise<Object>} Contacto actualizado
+ * @returns {Promise} Respuesta de la API
  */
 export const updateContact = async (contactId, contactData) => {
   try {
@@ -126,14 +101,58 @@ export const updateContact = async (contactId, contactData) => {
     
     if (response.ok) {
       const data = await response.json();
-      console.log('✅ Contacto actualizado:', data);
+      console.log('✅ Contacto actualizado exitosamente:', data);
       return data;
     } else {
-      console.error('❌ Error actualizando contacto:', response.status);
-      throw new Error('Error actualizando contacto');
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
   } catch (error) {
-    console.error('❌ Error en updateContact:', error);
+    console.error('❌ Error actualizando contacto:', error);
+    throw error;
+  }
+};
+
+/**
+ * Eliminar un contacto
+ * @param {number} contactId - ID del contacto a eliminar
+ * @returns {Promise<boolean>} True si se eliminó exitosamente
+ */
+export const deleteContact = async (contactId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/agendas/${AGENDA_SLUG}/contacts/${contactId}`, {
+      method: 'DELETE'
+    });
+    
+    if (response.ok) {
+      console.log('✅ Contacto eliminado exitosamente');
+      return true;
+    } else {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error('❌ Error eliminando contacto:', error);
+    return false;
+  }
+};
+
+/**
+ * Obtener un contacto específico por ID
+ * @param {number} contactId - ID del contacto
+ * @returns {Promise} Datos del contacto
+ */
+export const getContactById = async (contactId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/agendas/${AGENDA_SLUG}/contacts/${contactId}`);
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log('✅ Contacto obtenido:', data);
+      return data;
+    } else {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error('❌ Error obteniendo contacto:', error);
     throw error;
   }
 };
